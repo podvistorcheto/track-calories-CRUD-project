@@ -98,6 +98,7 @@ const ItemCtrl = (function () {
 const UICtrl = (function () {
     const UISelectors = {
         itemList: "#item-list",
+        listItems: "#item-list li",
         addBtn: ".add-btn",
         updateBtn: ".update-btn",
         backBtn: ".back-btn",
@@ -148,6 +149,22 @@ const UICtrl = (function () {
             document
                 .querySelector(UISelectors.itemList)
                 .insertAdjacentElement("beforeend", li);
+        },
+        updateListItem: function (item) {
+            let listItems = document.querySelectorAll(UISelectors.listItems);
+            // loop through the list
+            listItems = Array.from(listItems);
+            listItems.forEach(function (listItem) {
+                const itemID = listItem.getAttribute("id");
+                if (itemID === `item-${item.id}`) {
+                    document.querySelector(
+                        `#${itemID}`
+                    ).innerHTML = `<strong>${item.name}: </strong> <em>${item.calories} Calories</em>
+            <a href="#" class="secondary-content">
+              <i class="edit-item fas fa-edit"></i>
+            </a>`;
+                }
+            });
         },
         clearInput: function () {
             document.querySelector(UISelectors.itemNameInput).value = "";
@@ -262,8 +279,17 @@ const App = (function (ItemCtrl, UICtrl) {
     const itemUpdateSubmit = function (e) {
         // get item input
         const input = UICtrl.getItemInput();
-        // update item
+        // update item in data structure
         const updateItem = ItemCtrl.updateItem(input.name, input.calories);
+        // update item in UI
+        UICtrl.updateListItem(updateItem);
+
+        // Get total calories
+        const totalCalories = ItemCtrl.getTotalCalories();
+        // Add total calories to UI
+        UICtrl.showTotalCalories(totalCalories);
+        // clear input after editing item
+        UICtrl.clearEditState();
         e.preventDefault();
     };
 
