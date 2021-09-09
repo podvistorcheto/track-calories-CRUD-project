@@ -176,6 +176,11 @@ const UICtrl = (function () {
                 }
             });
         },
+        deleteListItem: function (id) {
+            const itemID = `#item-${id}`;
+            const item = document.querySelector(itemID);
+            item.remove();
+        },
         clearInput: function () {
             document.querySelector(UISelectors.itemNameInput).value = "";
             document.querySelector(UISelectors.itemCaloriesInput).value = "";
@@ -315,10 +320,13 @@ const App = (function (ItemCtrl, UICtrl) {
     const itemDeleteSubmit = function (e) {
         // get current item
         const currentItem = ItemCtrl.getCurrentItem();
-        // Delete from Data Structure
+        // Delete item from Data Structure
         ItemCtrl.deleteItem(currentItem.id);
+        // Delete item from UI
+        UICtrl.deleteListItem(currentItem.id);
         e.preventDefault();
     };
+    //
 
     // Public methods
     return {
