@@ -1,4 +1,37 @@
 // Storage Controller
+const StorageCtrl = (function () {
+    // Public method
+    return {
+        storeItem: function (item) {
+            let items;
+            // check if any items in LS
+            if (localStorage.getItem("items") === null) {
+                items = [];
+                // push the argument of the function (item)
+                items.push(item);
+                // set first brand item in LS
+                localStorage.setItem("items", JSON.stringify(items));
+            } else {
+                // display existing tasks from LS
+                items = JSON.parse(localStorage.getItem("items"));
+                // then push new item
+                items.push(item);
+                // set new item in LS
+                localStorage.setItem("items", JSON.stringify(items));
+            }
+        },
+        // take the items from LS to display in UI
+        getItemsFromStorage: function () {
+            let items;
+            if (localStorage.getItem("items") === null) {
+                let items = [];
+            } else {
+                items = JSON.parse(localStorage.getItem("items"));
+            }
+            return items;
+        },
+    };
+})();
 
 // Item Controller
 const ItemCtrl = (function () {
@@ -11,11 +44,12 @@ const ItemCtrl = (function () {
 
     // Data Structure / State
     const data = {
-        items: [
-            // {id: 0, name: 'Steak Dinner', calories: 1200},
-            // {id: 1, name: 'Cookie', calories: 400},
-            // {id: 2, name: 'Eggs', calories: 300}
-        ],
+        // items: [
+        // {id: 0, name: 'Steak Dinner', calories: 1200},
+        // {id: 1, name: 'Cookie', calories: 400},
+        // {id: 2, name: 'Eggs', calories: 300}
+        // ],
+        items: StorageCtrl.getItemsFromStorage(),
         currentItem: null,
         totalCalories: 0,
     };
@@ -131,7 +165,7 @@ const UICtrl = (function () {
                 html += `<li class="collection-item" id="item-${item.id}">
             <strong>${item.name}: </strong> <em>${item.calories} Calories</em>
             <a href="#" class="secondary-content">
-              <i class="edit-item fa fa-pencil"></i>
+              <i class="edit-item fas fa-edit"></i>
             </a>
           </li>`;
             });
@@ -232,7 +266,7 @@ const UICtrl = (function () {
 })();
 
 // App Controller
-const App = (function (ItemCtrl, UICtrl) {
+const App = (function (StorageCtrl, ItemCtrl, UICtrl) {
     // Load event listeners
     const loadEventListeners = function () {
         // Get UI selectors
@@ -291,6 +325,8 @@ const App = (function (ItemCtrl, UICtrl) {
             // Add total calories to UI
             UICtrl.showTotalCalories(totalCalories);
 
+            // Store in localStorage
+            StorageCtrl.storeItem(newItem);
             // Clear fields
             UICtrl.clearInput();
         }
@@ -397,7 +433,7 @@ const App = (function (ItemCtrl, UICtrl) {
             loadEventListeners();
         },
     };
-})(ItemCtrl, UICtrl);
+})(StorageCtrl, ItemCtrl, UICtrl);
 
 // Initialize App
 App.init();
